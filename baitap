@@ -1,0 +1,204 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+const int MAX = 100;
+struct BenhNhan {
+    int ma;
+    char ten[40];
+    int uuTien;
+};
+struct Queue {
+    BenhNhan data[MAX];
+    int front, rear;
+};
+void khoiTao(BenhNhan a[], int &n) {
+    n = 5;
+
+    a[0].ma = 105;
+    strcpy(a[0].ten, "An");
+    a[0].uuTien = 2;
+
+    a[1].ma = 102;
+    strcpy(a[1].ten, "Binh");
+    a[1].uuTien = 1;
+
+    a[2].ma = 108;
+    strcpy(a[2].ten, "Chi");
+    a[2].uuTien = 3;
+
+    a[3].ma = 101;
+    strcpy(a[3].ten, "Dung");
+    a[3].uuTien = 2;
+
+    a[4].ma = 106;
+    strcpy(a[4].ten, "Ha");
+    a[4].uuTien = 1;
+}
+void hienThi(BenhNhan a[], int n) {
+    cout << "\nMa\tTen\tUu tien\n";
+
+    for (int i = 0; i < n; i++) {
+        cout << a[i].ma << "\t"
+             << a[i].ten << "\t"
+             << a[i].uuTien << endl;
+    }
+}
+void insertionSort(BenhNhan a[], int n) {
+    for (int i = 1; i < n; i++) {
+        BenhNhan key = a[i];
+        int j = i - 1;
+
+        while (j >= 0 &&
+              (a[j].uuTien > key.uuTien ||
+              (a[j].uuTien == key.uuTien &&
+               a[j].ma > key.ma))) {
+
+            a[j + 1] = a[j];
+            j--;
+        }
+        a[j + 1] = key;
+    }
+}
+void sapXepTheoMa(BenhNhan a[], int n) {
+    for (int i = 1; i < n; i++) {
+        BenhNhan key = a[i];
+        int j = i - 1;
+
+        while (j >= 0 && a[j].ma > key.ma) {
+            a[j + 1] = a[j];
+            j--;
+        }
+
+        a[j + 1] = key;
+    }
+}
+int binarySearch(BenhNhan a[], int n, int ma) {
+    int left = 0;
+    int right = n - 1;
+
+    while (left <= right) {
+        int mid = (left + right) / 2;
+
+        if (a[mid].ma == ma) {
+            return mid;
+        }
+
+        if (a[mid].ma < ma) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    return -1;
+}
+void initQueue(Queue &q) {
+    q.front = 0;
+    q.rear = -1;
+}
+bool isEmpty(Queue q) {
+    return q.front > q.rear;
+}
+void enqueue(Queue &q, BenhNhan x) {
+    if (q.rear == MAX - 1) {
+        cout << "Queue day!\n";
+        return;
+    }
+    q.rear++;
+    q.data[q.rear] = x;
+}
+BenhNhan dequeue(Queue &q) {
+    BenhNhan x = q.data[q.front];
+    q.front++;
+    return x;
+}
+void hienThiQueue(Queue q) {
+    if (isEmpty(q)) {
+        cout << "Queue rong!\n";
+        return;
+    }
+    cout << "\nDanh sach benh nhan con cho:\n";
+    for (int i = q.front; i <= q.rear; i++) {
+        cout << "Ma: " << q.data[i].ma
+             << " - Ten: " << q.data[i].ten
+             << " - Uu tien: " << q.data[i].uuTien
+             << endl;
+    }
+
+    cout << "So benh nhan con cho: "
+         << q.rear - q.front + 1 << endl;
+}
+int main() {
+    BenhNhan ds[MAX];
+    int n;
+    cout << "========== QUAN LY BENH NHAN ==========\n";
+
+    khoiTao(ds, n);
+
+    cout << "\n1. DANH SACH BAN DAU";
+    hienThi(ds, n);
+    insertionSort(ds, n);
+
+    cout << "\n2. DANH SACH SAU KHI SAP XEP";
+    hienThi(ds, n);
+    BenhNhan dsMa[MAX];
+
+    for (int i = 0; i < n; i++) {
+        dsMa[i] = ds[i];
+    }
+
+    sapXepTheoMa(dsMa, n);
+
+    int maTim;
+
+    cout << "\n3. TIM KIEM BENH NHAN";
+    
+    maTim = 108;
+    int kq = binarySearch(dsMa, n, maTim);
+
+    if (kq != -1) {
+        cout << "\nTim thay benh nhan ma 108:";
+        cout << "\nTen: " << dsMa[kq].ten;
+        cout << "\nUu tien: " << dsMa[kq].uuTien;
+    } else {
+        cout << "\nKHONG TIM THAY";
+    }
+
+    maTim = 999;
+    kq = binarySearch(dsMa, n, maTim);
+
+    cout << "\nTim kiem ma 999: ";
+
+    if (kq != -1) {
+        cout << "Tim thay";
+    } else {
+        cout << "KHONG TIM THAY";
+    }
+
+    cout << endl;
+    Queue q;
+    initQueue(q);
+
+    cout << "\n4. DUA BENH NHAN VAO QUEUE\n";
+
+    for (int i = 0; i < n; i++) {
+        enqueue(q, ds[i]);
+        cout << "Da tiep nhan benh nhan ma: "
+             << ds[i].ma << endl;
+    }
+    cout << "\nCac benh nhan duoc tiep nhan:\n";
+
+    for (int i = 0; i < 2; i++) {
+        if (!isEmpty(q)) {
+            BenhNhan x = dequeue(q);
+            cout << "Ma: " << x.ma
+                 << " - Ten: " << x.ten << endl;
+        }
+    }
+    cout << "\n5. QUEUE CON LAI";
+
+    hienThiQueue(q);
+
+    return 0;
+}
